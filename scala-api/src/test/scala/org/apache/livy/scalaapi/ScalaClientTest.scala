@@ -20,6 +20,8 @@ package org.apache.livy.scalaapi
 import java.io._
 import java.net.URI
 import java.nio.charset.StandardCharsets._
+import java.nio.file.{Files, Paths, StandardOpenOption}
+import java.nio.ByteBuffer
 import java.util._
 import java.util.concurrent.CountDownLatch
 import java.util.jar.JarOutputStream
@@ -37,6 +39,8 @@ import org.scalatest.{BeforeAndAfter, FunSuite}
 import org.scalatest.concurrent.ScalaFutures
 
 import org.apache.livy.LivyBaseUnitTestSuite
+import org.apache.livy.client.common.Serializer
+import org.apache.livy.rsc.BaseProtocol.JobRequest
 import org.apache.livy.rsc.RSCConf.Entry._
 
 class ScalaClientTest extends FunSuite
@@ -56,6 +60,29 @@ class ScalaClientTest extends FunSuite
         client = null
       }
     }
+  }
+
+
+
+  test("test lambda serialization") {
+    val fn: ScalaJobContext => String = ScalaClientTestUtils.helloJob
+
+    val job = new Job[String] {
+      @throws(classOf[Exception])
+      override def call(jobContext: JobContext): String = fn(new ScalaJobContext(jobContext))
+    }
+
+    val jr : JobRequest[String] = new JobRequest[String](1.toString, job)
+    Files.write(Paths.get("file"), new Serializer().serialize(jr).array(),
+      StandardOpenOption.CREATE, StandardOpenOption.APPEND)
+
+  }
+
+  test("test lambda deserialization") {
+    val bytes = Files.readAllBytes(Paths.get("file"))
+    val jr = new Serializer().deserialize(ByteBuffer.wrap(bytes)).asInstanceOf[JobRequest[String]]
+    val hello = jr.job.call(null)
+    assert("hello" == hello)
   }
 
   test("test Job Submission") {
@@ -127,9 +154,9 @@ class ScalaClientTest extends FunSuite
     jarFile.close()
     val addJarFuture = client.addJar(new URI("file:" + jar.getAbsolutePath()))
     Await.ready(addJarFuture, ScalaClientTestUtils.Timeout second)
-    val sFuture = client.submit { context =>
-      ScalaClientTest.fileOperation(true, "test.resource", context)
-    }
+    val sFuture = client.submit (
+      context => ScalaClientTest.fileOperation(true, "test.resource", context))
+
     ScalaClientTestUtils.assertTestPassed(sFuture, "test resource")
   }
 

@@ -92,7 +92,7 @@ public abstract class BaseProtocol extends RpcDispatcher {
 
   }
 
-  protected static class JobRequest<T> {
+  public static class JobRequest<T> {
 
     public final String id;
     public final Job<T> job;

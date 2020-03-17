@@ -124,6 +124,9 @@ abstract class BaseJsonServletSpec extends ScalatraSuite
 
           val data = out.toByteArray()
           if (data.length > 0) {
+            // if (java.util.Arrays.asList(data).contains(31.toByte)) {
+            //   println(data)
+            // }
             mapper.readValue(data, klass.runtimeClass)
           } else {
             null

@@ -17,37 +17,22 @@
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>org.apache.livy</groupId>
-    <artifactId>livy-main</artifactId>
-    <version>0.8.0-incubating-SNAPSHOT</version>
-  </parent>
-
   <groupId>org.apache.livy</groupId>
-  <artifactId>livy-client-common</artifactId>
+  <artifactId>livy-scala-api_2.12</artifactId>
   <version>0.8.0-incubating-SNAPSHOT</version>
   <packaging>jar</packaging>
 
-  <dependencies>
-    <dependency>
-      <groupId>org.apache.livy</groupId>
-      <artifactId>livy-api</artifactId>
-      <version>${project.version}</version>
-    </dependency>
+  <parent>
+    <groupId>org.apache.livy</groupId>
+    <artifactId>livy-scala-api-parent</artifactId>
+    <version>0.8.0-incubating-SNAPSHOT</version>
+    <relativePath>../pom.xml</relativePath>
+  </parent>
 
-    <dependency>
-      <groupId>com.esotericsoftware</groupId>
-      <artifactId>kryo</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
-      <artifactId>jackson-databind</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-api</artifactId>
-      <scope>provided</scope>
-    </dependency>
-  </dependencies>
+  <properties>
+    <scala.version>${scala-2.12.version}</scala.version>
+    <scala.binary.version>${scala-2.12.binary.version}</scala.binary.version>
+    <spark.version>${spark.scala-2.12.version}</spark.version>
+    <netty.version>${netty.spark-2.12.version}</netty.version>
+  </properties>
 </project>
